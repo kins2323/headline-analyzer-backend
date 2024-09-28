@@ -22,7 +22,7 @@ router.post('/analyze', async (req, res) => {
 
     const openai = createOpenAIClient();
 
-    // Create the new prompt for the OpenAI API requesting JSON format with dynamic recommendations
+    // Create the new prompt for the OpenAI API requesting JSON format with full recommendations
     const prompt = `You are an expert in marketing and content creation, specializing in analyzing headlines for effectiveness. Based on the following headline, provide tailored recommendations that focus on clarity, emotional impact, SEO optimization, and engagement potential. Your recommendations should consider the category, target audience, and platform.
 
     Headline: "${headline}"
@@ -30,26 +30,38 @@ router.post('/analyze', async (req, res) => {
     Target Audience: "${targetAudience}"
     Platform: "${platform}"
 
-    Please return your analysis in JSON format with dynamic and context-specific recommendations based on the headline:
+    Please return your analysis in JSON format with dynamic and context-specific recommendations (including both id and text):
 
     {
       "general_score": number,
       "aspects": {
         "clarity_and_conciseness": {
           "c_score": number,
-          "recommendations": []
+          "recommendations": [
+            {"id": "rec1", "text": "Your recommendation text here"},
+            {"id": "rec2", "text": "Your recommendation text here"}
+          ]
         },
         "emotional_impact": {
           "e_score": number,
-          "recommendations": []
+          "recommendations": [
+            {"id": "rec1", "text": "Your recommendation text here"},
+            {"id": "rec2", "text": "Your recommendation text here"}
+          ]
         },
         "seo_optimization": {
           "s_score": number,
-          "recommendations": []
+          "recommendations": [
+            {"id": "rec1", "text": "Your recommendation text here"},
+            {"id": "rec2", "text": "Your recommendation text here"}
+          ]
         },
         "engagement_potential": {
           "g_score": number,
-          "recommendations": []
+          "recommendations": [
+            {"id": "rec1", "text": "Your recommendation text here"},
+            {"id": "rec2", "text": "Your recommendation text here"}
+          ]
         }
       }
     }`;
@@ -79,10 +91,7 @@ router.post('/analyze', async (req, res) => {
       const validJson = content.slice(jsonStart, jsonEnd);
       const headlineAnalysis = JSON.parse(validJson);
 
-      // Rename aspect properties for consistency and add IDs to recommendations
-      const addIdToRecommendations = (recommendations) =>
-        recommendations.map((rec, index) => ({ id: `rec${index + 1}`, text: rec.text }));
-
+      // Rename aspect properties for consistency
       const {
         general_score,
         aspects: {
@@ -93,19 +102,13 @@ router.post('/analyze', async (req, res) => {
         },
       } = headlineAnalysis;
 
-      // Add IDs to recommendations
-      const formattedClarityRecommendations = addIdToRecommendations(clarityRecommendations);
-      const formattedEmotionalRecommendations = addIdToRecommendations(emotionalRecommendations);
-      const formattedSEORecommendations = addIdToRecommendations(seoRecommendations);
-      const formattedEngagementRecommendations = addIdToRecommendations(engagementRecommendations);
-
       // Build a new object to match frontend expectations
       const formattedAnalysis = {
         generalScore: general_score,
-        clarity: { score: c_score, recommendations: formattedClarityRecommendations },
-        emotion: { score: e_score, recommendations: formattedEmotionalRecommendations },
-        seo: { score: s_score, recommendations: formattedSEORecommendations },
-        engagement: { score: g_score, recommendations: formattedEngagementRecommendations },
+        clarity: { score: c_score, recommendations: clarityRecommendations },
+        emotion: { score: e_score, recommendations: emotionalRecommendations },
+        seo: { score: s_score, recommendations: seoRecommendations },
+        engagement: { score: g_score, recommendations: engagementRecommendations },
       };
 
       res.json(formattedAnalysis);
