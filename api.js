@@ -22,7 +22,7 @@ router.post('/analyze', async (req, res) => {
 
     const openai = createOpenAIClient();
 
-    // Create the new prompt for the OpenAI API requesting JSON format with full recommendations
+    // Create the prompt for analyzing headlines
     const prompt = `You are an expert in marketing and content creation, specializing in analyzing headlines for effectiveness. Based on the following headline, provide tailored recommendations that focus on clarity, emotional impact, SEO optimization, and engagement potential. Your recommendations should consider the category, target audience, and platform.
 
     Headline: "${headline}"
@@ -135,13 +135,18 @@ router.post('/generate', async (req, res) => {
     const openai = createOpenAIClient();
 
     // Create the prompt for generating headlines
-    const prompt = `You are a headline generation expert. Based on the following information, generate a list of creative and effective headlines:
+    const prompt = `You are a headline generation expert. Based on the following information, generate a list of creative and effective headlines tailored to engage the target audience and drive clicks:
 
-    Category: "${category}"
-    Target Audience: "${targetAudience}"
-    Platform: "${platform}"
+    - **Category:** "${category}"
+    - **Target Audience:** "${targetAudience}"
+    - **Platform:** "${platform}"
 
-    Please provide 5 headline suggestions, each formatted as a string.`;
+    Please consider the following when creating the headlines:
+    - Each headline should be concise and compelling.
+    - Use action-oriented language to inspire action.
+    - Ensure the headlines are relevant to the category and resonate with the audience.
+    - Provide at least 5 headline suggestions, each formatted as a string.
+    - Aim for a balance of clarity and emotional appeal to maximize engagement.`;
 
     // Call OpenAI API to generate headlines
     const response = await openai.createChatCompletion({
