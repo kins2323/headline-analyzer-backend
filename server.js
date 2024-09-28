@@ -12,7 +12,10 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Allowed origins
-const allowedOrigins = ['https://www.kinovadigitalmarketing.com'];
+const allowedOrigins = [
+  'https://www.kinovadigitalmarketing.com',
+  'http://127.0.0.1:8080', // Added this domain for CORS
+];
 
 // Middleware
 app.use(helmet());
@@ -29,8 +32,8 @@ app.use(cors({
 }));
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
 });
 app.use(limiter);
 

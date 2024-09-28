@@ -122,4 +122,48 @@ router.post('/analyze', async (req, res) => {
   }
 });
 
+// New POST route for generating headlines
+router.post('/generate', async (req, res) => {
+  try {
+    const { category, platform, targetAudience } = req.body;
+
+    // Check if all required fields are provided
+    if (!category || !platform || !targetAudience) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const openai = createOpenAIClient();
+
+    // Create the prompt for generating headlines
+    const prompt = `You are a headline generation expert. Based on the following information, generate a list of creative and effective headlines:
+
+    Category: "${category}"
+    Target Audience: "${targetAudience}"
+    Platform: "${platform}"
+
+    Please provide 5 headline suggestions, each formatted as a string.`;
+
+    // Call OpenAI API to generate headlines
+    const response = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 150,
+      temperature: 0.7,
+    });
+
+    const content = response.data.choices[0].message.content;
+
+    // Log full response for debugging
+    console.log('Full OpenAI Response for Headlines:', content);
+
+    // Extract and format the generated headlines
+    const headlines = content.split('\n').filter(line => line.trim() !== '');
+
+    res.json({ headlines });
+  } catch (error) {
+    console.error('OpenAI API Error:', error);
+    res.status(500).json({ error: 'An error occurred while generating headlines. Please try again later.' });
+  }
+});
+
 export default router;
