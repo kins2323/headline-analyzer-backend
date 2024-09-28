@@ -14,7 +14,7 @@ const port = process.env.PORT || 3001;
 // Allowed origins
 const allowedOrigins = [
   'https://www.kinovadigitalmarketing.com',
-  'http://127.0.0.1:8080', // Added this domain for CORS
+  'http://localhost:3000', // Added this domain for CORS
 ];
 
 // Middleware
