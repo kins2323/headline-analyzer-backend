@@ -13,7 +13,7 @@ const port = process.env.PORT || 3001;
 
 // Allowed origins
 const allowedOrigins = [
-  'https://www.kinovadigitalmarketing.com',
+  'https://kinovadigitalmarketing.com',
   'http://localhost:3000', // Added this domain for CORS
 ];
 
